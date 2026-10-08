@@ -1,7 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { NEXT_COOKIE, NEXT_COOKIE_MAX_AGE } from "@/lib/auth/next-cookie";
 import { safeNextPath } from "@/lib/auth/safe-redirect";
 import { siteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -23,12 +24,21 @@ export async function sendMagicLink(formData: FormData) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      // The email template adds ?token_hash=... to this address (see
+      // supabase/templates/). Keep it free of its own "?".
+      emailRedirectTo: `${origin}/auth/confirm`,
     },
   });
 
   if (error) {
     redirect(`/login?error=send&next=${encodeURIComponent(next)}`);
   }
+  (await cookies()).set(NEXT_COOKIE, next, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: NEXT_COOKIE_MAX_AGE,
+    path: "/",
+  });
   redirect("/login?sent=1");
 }

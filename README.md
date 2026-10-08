@@ -29,7 +29,8 @@ You need [Node.js 22](https://nodejs.org) and a free Supabase project.
    cp .env.example .env.local
    ```
 3. Create the database tables. In the Supabase dashboard, open the SQL editor and run each file in `supabase/migrations/` in order. (Later we will switch to the Supabase CLI, which does this with one command.)
-4. In Supabase > Authentication > URL Configuration, add `http://localhost:3000/auth/callback` as a redirect URL.
+4. In Supabase > Authentication > URL Configuration, add `http://localhost:3000/**` as a redirect URL.
+   In Supabase > Authentication > Emails, paste in the two templates from `supabase/templates/`.
 5. Start the site:
    ```bash
    npm run dev
@@ -52,6 +53,7 @@ update public.profiles set role = 'admin' where email = 'you@example.com';
 3. In Supabase > Authentication > URL Configuration, set the Site URL to your Vercel address and add
    `https://*-<your-vercel-account>.vercel.app/**` (for this project: `https://*-sdzrdy-gmailcoms-projects.vercel.app/**`) to the redirect URLs, so sign-in links work on preview links too.
    Never allow all of `*.vercel.app`: anyone can host a site there.
+4. In Supabase > Authentication > Emails, paste in the two templates from `supabase/templates/` (see the README there).
 
 ## Useful commands
 
