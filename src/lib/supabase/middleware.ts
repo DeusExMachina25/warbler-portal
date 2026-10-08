@@ -7,6 +7,17 @@ import { supabaseEnv } from "@/lib/env";
 const PRIVATE_PREFIXES = ["/dashboard", "/admin"];
 
 export async function updateSession(request: NextRequest) {
+  // If Supabase does not recognise the address a sign-in link asked for, it
+  // falls back to the Site URL (usually "/") with ?code=... attached. Send
+  // that code to the callback so the person still ends up signed in.
+  const code = request.nextUrl.searchParams.get("code");
+  if (code && request.nextUrl.pathname !== "/auth/callback") {
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = "/auth/callback";
+    callbackUrl.search = `?code=${encodeURIComponent(code)}`;
+    return NextResponse.redirect(callbackUrl);
+  }
+
   let response = NextResponse.next({ request });
   const { url, publishableKey } = supabaseEnv();
 
