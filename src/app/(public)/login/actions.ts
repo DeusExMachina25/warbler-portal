@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { safeNextPath } from "@/lib/auth/safe-redirect";
 import { siteUrl } from "@/lib/env";
@@ -14,11 +15,15 @@ export async function sendMagicLink(formData: FormData) {
     redirect(`/login?error=email&next=${encodeURIComponent(next)}`);
   }
 
+  // Send the link back to whichever address the form was used on (local,
+  // a Vercel preview or the live site), so one setting works everywhere.
+  const origin = (await headers()).get("origin") ?? siteUrl();
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
 
