@@ -44,6 +44,14 @@ Sign in once with your email, then run this in the Supabase SQL editor:
 update public.profiles set role = 'admin' where email = 'you@example.com';
 ```
 
+## Put it online (Vercel)
+
+1. On [vercel.com/new](https://vercel.com/new), import the `warbler-portal` GitHub repository.
+2. Before deploying, add two environment variables (Supabase > Project Settings > API):
+   `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+3. In Supabase > Authentication > URL Configuration, set the Site URL to your Vercel address and add
+   `https://*.vercel.app/**` to the redirect URLs, so sign-in links work on preview links too.
+
 ## Useful commands
 
 | Command | What it does |
