@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { SubmitButton } from "@/components/submit-button";
 import { sendMagicLink } from "./actions";
 
 export const metadata: Metadata = { title: "Sign in" };
 
 const ERRORS: Record<string, string> = {
   email: "Please enter a valid email address.",
-  send: "We couldn't send the link. Please try again in a minute.",
+  send: "We couldn't send the link just now. Wait a minute, then try again.",
   link: "That sign-in link has expired or was already used. Request a new one.",
 };
 
@@ -21,7 +22,8 @@ export default async function LoginPage({
       <h1 className="text-2xl font-semibold">Sign in</h1>
       {sent ? (
         <p className="mt-4 text-neutral-600 dark:text-neutral-400">
-          Check your inbox. We sent you a sign-in link.
+          Check your inbox. We sent you a sign-in link. You can open it on any
+          device. It works once and expires after an hour.
         </p>
       ) : (
         <form action={sendMagicLink} className="mt-6 flex flex-col gap-3">
@@ -38,12 +40,7 @@ export default async function LoginPage({
           />
           <input type="hidden" name="next" value={next ?? ""} />
           {error && ERRORS[error] ? <p className="text-sm text-red-600">{ERRORS[error]}</p> : null}
-          <button
-            type="submit"
-            className="rounded-md bg-neutral-900 px-4 py-2 text-white dark:bg-white dark:text-neutral-900"
-          >
-            Email me a sign-in link
-          </button>
+          <SubmitButton pendingText="Sending…">Email me a sign-in link</SubmitButton>
         </form>
       )}
     </section>

@@ -8,10 +8,22 @@ const PRIVATE_PREFIXES = ["/dashboard", "/admin"];
 
 export async function updateSession(request: NextRequest) {
   // If Supabase does not recognise the address a sign-in link asked for, it
-  // falls back to the Site URL (usually "/") with ?code=... attached. Send
-  // that code to the callback so the person still ends up signed in.
-  const code = request.nextUrl.searchParams.get("code");
-  if (code && request.nextUrl.pathname !== "/auth/callback") {
+  // falls back to the Site URL (usually "/") with the sign-in details
+  // attached. Pass them to the right handler so the person still signs in.
+  const params = request.nextUrl.searchParams;
+  const tokenHash = params.get("token_hash");
+  const code = params.get("code");
+  const path = request.nextUrl.pathname;
+  if (tokenHash && path !== "/auth/confirm") {
+    const confirmUrl = request.nextUrl.clone();
+    confirmUrl.pathname = "/auth/confirm";
+    confirmUrl.search = new URLSearchParams({
+      token_hash: tokenHash,
+      type: params.get("type") ?? "email",
+    }).toString();
+    return NextResponse.redirect(confirmUrl);
+  }
+  if (code && path !== "/auth/callback") {
     const callbackUrl = request.nextUrl.clone();
     callbackUrl.pathname = "/auth/callback";
     callbackUrl.search = `?code=${encodeURIComponent(code)}`;
@@ -40,7 +52,6 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
   const isPrivate = PRIVATE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
 
   if (!user && isPrivate) {
