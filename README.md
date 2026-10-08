@@ -50,7 +50,8 @@ update public.profiles set role = 'admin' where email = 'you@example.com';
 2. Before deploying, add two environment variables (Supabase > Project Settings > API):
    `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 3. In Supabase > Authentication > URL Configuration, set the Site URL to your Vercel address and add
-   `https://*.vercel.app/**` to the redirect URLs, so sign-in links work on preview links too.
+   `https://*-deusexmachina25s-projects.vercel.app/**` to the redirect URLs, so sign-in links work on preview links too.
+   Never allow all of `*.vercel.app`: anyone can host a site there.
 
 ## Useful commands
 
